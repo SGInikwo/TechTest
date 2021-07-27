@@ -1,6 +1,6 @@
 # TechTest
 
-This website was made using asp.net core 5 mvc. (MAC)
+This website was made using asp.net core 5 mvc. (MAC OS)
 
 The Dependencies:
   Razor RuntimeCompilation,
