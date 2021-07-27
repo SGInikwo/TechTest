@@ -14,15 +14,17 @@ namespace TechTest.Controllers
     {
         private readonly ApplicationDbContext _db;
 
-        //Database context
+        // Database context
         public HomeController(ApplicationDbContext db)
         {
             _db = db;
         }
 
+        [HttpGet]
         //Index few
         public IActionResult Index()
         {
+            //ViewBag.Success = TempData["Success"];
             return View();
         }
 
@@ -41,6 +43,7 @@ namespace TechTest.Controllers
             {
                 _db.NumberLists.Add(obj);
                 _db.SaveChanges();
+                TempData["Success"] = "Added Successfully!";
                 return RedirectToAction("Index");
             }
             return View(obj);
