@@ -8,5 +8,5 @@ The Dependencies:
   Sqlite,
   SqlServer,
   EntityFrameworkCore Tools,
-  OpenApi,
+  OpenApi, and
   CodeGeneration DesignAspNetCore
