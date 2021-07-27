@@ -1,0 +1,172 @@
+﻿@model TechTest.Models.NumberList
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    @* User input field with button *@
+    <form class="form-inline">
+        <div class="form-group mb-2">
+            <input id="usrNumber" class="form-control" type="number" placeholder="number" style="width:80px; height:80px; margin-right:5px" />
+            <button class="butn btn btn-secondary btn-sm" onclick="addNumber()" style="width:80px; height:80px;">GO</button>
+        </div> 
+    </form>
+
+    @* Table in a form format *@
+<form method="post" asp-action="Create">
+    @* Validation *@
+    <span asp-validation-for="Numbers" id="validation" class="alert-danger"></span>
+    <span asp-validation-for="time" id="validationToo" class="alert-danger"></span>
+
+    <table class="table table-bordered" style="margin-top: 0px;">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">List</th>
+                <th scope="col" style="width:230px;">
+                    <select id="sort" asp-for="direction" class="form-control">
+                        <option disabled="disabled" selected="selected">-</option>
+                        <option>Ascending</option>
+                        <option>Descending</option>
+                    </select>
+                </th>
+            </tr>
+        </thead>
+        @* Where the rows will be inserted *@
+        <tbody id="numberRow">
+        </tbody>
+    </table>
+    <div class="form-group">
+        <input asp-for="Numbers" id="display" class="form-control" type="text" style="margin-top: -5px;" readonly />
+    </div>
+    <input id="time" asp-for="time" type="text" style="margin-bottom: 12px;" readonly>
+    <div>
+        <input type="submit" class="btn btn-success" value="SEND" />
+        <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="Results">Results</a>
+    </div>
+</form>
+</div>
+
+@section Scripts{
+
+    @* Adding the client side validation *@
+    @{ <partial name="_ValidationScriptsPartial" />}
+
+    <script>
+        let numbers = [];
+        let counter = 1;
+        let time;
+        let sort = document.getElementById('sort');
+        let numVal = true;
+
+        /* Adding the numbers to the table */
+        const addNumber = () => {
+            event.preventDefault();
+            let userNumber = document.getElementById('usrNumber').value;
+            let number = parseInt(userNumber);
+            sort.selectedIndex = 0;
+
+            /* Check if validation is still on the screen */
+            if (numVal == true) {
+                document.getElementById('validation').style.display = "none";
+                numVal = false;
+            }
+
+            /* Only if a number is provided */
+            if (Number.isInteger(number)) {
+                numbers.push(number);
+                document.forms[0].reset();
+
+                let fullRow = document.getElementById('numberRow').insertRow();
+                fullRow.innerHTML = '<tr> <th scope="row">' + counter + '</th> <td>' + number + '</td > </tr>';
+
+                counter++;
+                document.getElementById('display').value = " ";
+                numbers.forEach(display);
+            }
+        }
+
+        /* Gets called to show the added number in the text box down below */
+        function display(num) {
+            let text = "";
+            text += num + ", ";
+            document.getElementById('display').value += text;
+
+        }
+
+        /* Gets called to order the list Ascending or Descending */
+        function orderingList(num, index) {
+            let fullRow = document.getElementById('numberRow').insertRow();
+            fullRow.innerHTML = '<tr> <th scope="row">' + (index+1) + '</th> <td>' + num + '</td > </tr>';
+        }
+
+        /* Sorting the list */
+        function sorting() {
+            if (sort.selectedIndex == 1 || sort.selectedIndex == 2) {
+                document.getElementById('validationToo').style.display = "none";
+                let t0 = new Date().getTime();
+                quickSortRecursive(numbers, 0, numbers.length-1);
+                let t1 = new Date().getTime();
+                time = t1 - t0;
+                document.getElementById('display').value = numbers;
+
+                document.getElementById('numberRow').innerHTML = "";
+                numbers.forEach(orderingList);
+
+                document.getElementById('time').value = time;
+            }
+        }
+
+        /* All the events */
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('butn') != null) {
+                document.getElementById('butn').addEventListener('click', addNumber);
+            }
+
+            document.getElementById('sort').addEventListener('change', sorting)
+            
+        });
+
+        
+
+        /* !!Quicksort algorithm!! */
+
+        function partition(list, start, end) {
+            const pivotValue = list[end];
+            let pivotIndex = start;
+            for (let i = start; i < end; i++) {
+                if (sort.selectedIndex == 1) {
+                    if (list[i] < pivotValue) {
+                        /// Swapping elements
+                        [list[i], list[pivotIndex]] = [list[pivotIndex], list[i]];
+                        pivotIndex++;
+                    }
+                }
+                if (sort.selectedIndex == 2) {
+                    if (list[i] > pivotValue) {
+                        /// Swapping elements
+                        [list[i], list[pivotIndex]] = [list[pivotIndex], list[i]];
+                        pivotIndex++;
+                    }
+                }
+            }
+
+            [list[pivotIndex], list[end]] = [list[end], list[pivotIndex]]
+            return pivotIndex;
+        };
+
+        function quickSortRecursive(list, start, end) {
+            if (start >= end) {
+                return;
+            }
+
+            let index = partition(list, start, end);
+
+            /* Recursively apply the same logic to the left and right subarrays */
+            quickSortRecursive(list, start, index - 1);
+            quickSortRecursive(list, index + 1, end);
+        }
+        
+    </script>
+}
