@@ -10,3 +10,5 @@ The Dependencies:
   EntityFrameworkCore Tools,
   OpenApi, and
   CodeGeneration DesignAspNetCore
+
+![](images/techIm.png)
